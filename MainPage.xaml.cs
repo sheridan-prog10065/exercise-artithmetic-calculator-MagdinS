@@ -18,27 +18,34 @@ public partial class MainPage : ContentPage
         _lstExpHistory.ItemsSource = _expList;     
     }
 
-    private void OnCalculate(object sender, EventArgs e)
+    private async void OnCalculate(object sender, EventArgs e)
     {
-        //Get the input to the arithmetic operation
-        double leftOperand = double.Parse(_txtLeftOp.Text);
-        double rightOperand = double.Parse(_txtRightOp.Text);
+        try
+        {
+            //Get the input to the arithmetic operation
+            double leftOperand = double.Parse(_txtLeftOp.Text);
+            double rightOperand = double.Parse(_txtRightOp.Text);
         
-        //Obtain the character that represents the arithmetic operation
-        //Cast to string is possible because SelectedItem is an Object
-        //Extra paranthesis are needed to ensure the index operator is applied to the result of the cast
-        char operation = ((string)_pckOperand.SelectedItem)[0]; 
+            //Obtain the character that represents the arithmetic operation
+            //Cast to string is possible because SelectedItem is an Object
+            //Extra paranthesis are needed to ensure the index operator is applied to the result of the cast
+            char operation = ((string)_pckOperand.SelectedItem)[0]; 
 
-        //Perform the arithmetic operation and obtain the result
-        double result = PerformArithmeticOperation(operation, leftOperand, rightOperand);
+            //Perform the arithmetic operation and obtain the result
+            double result = PerformArithmeticOperation(operation, leftOperand, rightOperand);
 
-        //Display the arithmetic calculation to the user. Show the work!
-        string expression = $"{leftOperand} {operation} {rightOperand} = {result}";
+            //Display the arithmetic calculation to the user. Show the work!
+            string expression = $"{leftOperand} {operation} {rightOperand} = {result}";
         
-        //remember the expression in the page's field variable
-        _expList.Add(expression);
+            //remember the expression in the page's field variable
+            _expList.Add(expression);
         
-        _txtMathExp.Text = expression;
+            _txtMathExp.Text = expression;
+        }
+        catch (Exception ex) when (ex is FormatException or ArgumentNullException)
+        {
+            await DisplayAlert("Error", ex.Message, "OK");
+        }
     }
 
     private double PerformArithmeticOperation(char operation, double leftOperand, double rightOperand)
