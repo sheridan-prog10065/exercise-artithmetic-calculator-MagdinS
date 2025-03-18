@@ -19,7 +19,7 @@
                 <Entry x:Name="_txtLeftOp" Margin="0, 6, 10, 0"/>
             </VerticalStackLayout>
             <Picker x:Name="_pckOperand"
-                    Title="..."
+                    Title=""
                     Grid.Column="1"
                     HorizontalOptions="Center"
                     VerticalOptions="End"
