@@ -23,13 +23,9 @@ public partial class MainPage : ContentPage
         try
         {
             //Get the input to the arithmetic operation
-            double leftOperand = double.Parse(_txtLeftOp.Text);
-            double rightOperand = double.Parse(_txtRightOp.Text);
-
-            //Obtain the character that represents the arithmetic operation
-            //Cast to string is possible because SelectedItem is an Object
-            //Extra paranthesis are needed to ensure the index operator is applied to the result of the cast
-            char operation = ((string)_pckOperand.SelectedItem)[0];
+            double leftOperand = ReadLeftOperand();
+            double rightOperand = ReadRightOperand();
+            char operation = ReadArithmeticOperation();
 
             //Perform the arithmetic operation and obtain the result
             double result = PerformArithmeticOperation(operation, leftOperand, rightOperand);
@@ -42,21 +38,74 @@ public partial class MainPage : ContentPage
 
             _txtMathExp.Text = expression;
         }
-        catch (ArgumentNullException ex)
+        catch (CalculatorException ex)
         {
-            //The user did not provide any input
-            await DisplayAlert("Error", "Please provide the required input!", "OK");
+            await DisplayAlert("Arithmetic Calculator", ex.Message, "OK");
         }
-        catch (FormatException ex)
+
+    }
+
+    private char ReadArithmeticOperation()
+    {
+        //Step 1: Obtain the input
+        string opInput  = _pckOperand.SelectedItem as  string;
+        
+        //Step 2: Validate the input
+        if (String.IsNullOrWhiteSpace(opInput))
+        { 
+            throw new CalculatorException("Please select one of the arithmetic operations.");
+        }
+        
+        //Step 3: Use the input
+        //Obtain the character that represents the arithmetic operation
+        //Cast to string is possible because SelectedItem is an Object
+        //Extra paranthesis are needed to ensure the index operator is applied to the result of the cast
+        char operation = opInput[0];
+        return operation;
+    }
+
+    private double ReadRightOperand()
+    {
+        //Step1: Obtain Input
+        string rightOperandInput = _txtRightOp.Text;
+        
+        //Step 2: Validate the input
+        if (String.IsNullOrWhiteSpace(rightOperandInput))
         {
-            //The user has provided input but it is incorrect (e.g. not a number)
-            await DisplayAlert("Error", "Please provide the correct input!", "OK");
+            throw new CalculatorException("Please provide the right operand for the arithmetic operation.");
         }
-        catch (DivideByZeroException ex)
+
+        double rightOperand;
+        if (Double.TryParse(rightOperandInput,  out rightOperand) == false)
         {
-            //The user is executing a division and the denominator is zero
-            await DisplayAlert("Error", "Please provide non-zero denominator!", "OK");
+            //Parsing has failed. The input is not a number
+            throw new CalculatorException("Please enter a number as the right operand for the arithmetic operation.");
         }
+        
+        //Step 3: Use the input
+        return rightOperand;
+    }
+
+    private double ReadLeftOperand()
+    {
+        //Step1: Obtain Input
+        string leftOperandInput = _txtRightOp.Text;
+        
+        //Step 2: Validate the input
+        if (String.IsNullOrWhiteSpace(leftOperandInput))
+        {
+            throw new CalculatorException("Please provide the left operand for the arithmetic operation.");
+        }
+
+        double leftOperand;
+        if (Double.TryParse(leftOperandInput,  out leftOperand) == false)
+        {
+            //Parsing has failed. The input is not a number
+            throw new CalculatorException("Please enter a number as the left operand for the arithmetic operation.");
+        }
+        
+        //Step 3: Use the input
+        return leftOperand;
     }
 
     private double PerformArithmeticOperation(char operation, double leftOperand, double rightOperand)
